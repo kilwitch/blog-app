@@ -1,5 +1,5 @@
 import conf from '../conf.js'
-import {Client, Databases,ID,Storage, Query, TablesDB} from "appwrite"
+import {Client, Databases,ID,Storage, Query, } from "appwrite"
 
 export class Service{
     client= new Client();
@@ -16,7 +16,7 @@ export class Service{
 
     async createPost({title, slug, content, featuredImage, status, userId}){
         try {
-            return await this.databases.createDocument(
+            return await this.databases.createRow(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
@@ -35,7 +35,7 @@ export class Service{
 
     async updatePost(slug,{title, content, featuredImage, status}){
     try {
-        return await this.databases.updateDocument(
+        return await this.databases.updateRow(
             conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
@@ -53,7 +53,7 @@ export class Service{
     }
     async deletePost(slug){
         try {
-             await this.databases.deleteDocument(
+             await this.databases.deleteRow(
                  conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
@@ -61,14 +61,14 @@ export class Service{
             return true;
         } catch (error) {
             console.log("Appwrite service :: deletePost :: error", error)
-            
+            return false;     
         }
-        return false;
+       
     }
     
     async getPost(slug){
         try {
-            return await this.databases.getDocument(
+            return await this.databases.getRow(
                  conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
@@ -81,7 +81,7 @@ export class Service{
 
     async getPosts(queries= [Query.equal("status", "active")]){
         try {
-            return await this.databases.listDocuments(
+            return await this.databases.listRows(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 queries,
@@ -122,7 +122,7 @@ export class Service{
     }
 
     getFilePreview(fileId){
-            return  this.bucket.getFileView(
+            return  this.bucket.getFilePreview(
                 conf.appwriteBucketId,
                 fileId,
             )
@@ -133,4 +133,4 @@ export class Service{
 
 const service=new Service()
 
-export default Service
+export default service
