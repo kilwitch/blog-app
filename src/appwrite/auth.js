@@ -28,12 +28,19 @@ export class AuthService {
     }
 
     async login({email, password}){
+    try {
+        // Delete existing session first if any
         try {
-            await this.account.createEmailPasswordSession({email, password});
-        } catch (error) {
-            throw error;
+            await this.account.deleteSession('current')
+        } catch (e) {
+            // No active session, ignore error
         }
+        return await this.account.createEmailSession(email, password)
+    } catch (error) {
+        console.log("Appwrite :: login :: error", error)
+        throw error
     }
+}
 
     async getCurrentUser() {
         try {
