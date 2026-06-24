@@ -25,7 +25,7 @@ function Login() {
 
             try {
                 await authService.logout()
-            } catch (e) {
+            } catch {
                 // ignore, no active session
             }
             const session=await authService.login(data)
@@ -35,7 +35,7 @@ function Login() {
                 const userData=await authService.getCurrentUser()
                 
 
-                if(userData) dispatch(authLogin(userData))
+                if(userData) dispatch(authLogin({userData}))
                 navigate("/")
             }
         } catch (error) {

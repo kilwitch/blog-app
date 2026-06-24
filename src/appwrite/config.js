@@ -26,11 +26,12 @@ export class Service{
                     content,
                     featuredImage,
                     status,
-                    userid:userId,
+                    userid: userId,
                 }
         )
         } catch (error) {
             console.log("Appwrite service :: createPost :: error", error)
+            throw error
         }
     }
 
@@ -49,7 +50,7 @@ export class Service{
         )
     } catch (error) {
             console.log("Appwrite service :: updatePost :: error", error)
-        
+            throw error
         }   
     }
     async deletePost(slug){
@@ -107,7 +108,7 @@ export class Service{
             )
         } catch (error) {
             console.log("Appwrite service :: uploadFile:: error", error);
-            return false;
+            throw error
         }
     }
 

@@ -13,17 +13,13 @@ export class AuthService {
     }
 
     async  createAccount({email, password, name}){
-        try {
-            const userAccount= await this.account.create({
-                userId:ID.unique(),email, password,name});
-            if(userAccount){
-                // call another method
-                return this.login({email, password});
-            }else{
-                return userAccount;
-            }
-        } catch (error) {
-            throw error;
+        const userAccount= await this.account.create(
+            ID.unique(), email, password, name);
+        if(userAccount){
+            // call another method
+            return this.login({email, password});
+        }else{
+            return userAccount;
         }
     }
 
@@ -32,7 +28,7 @@ export class AuthService {
         // Delete existing session first if any
         try {
             await this.account.deleteSession('current')
-        } catch (e) {
+        } catch {
             // No active session, ignore error
         }
         return await this.account.createEmailSession(email, password)

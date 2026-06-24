@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {useForm} from 'react-hook-form'
 import {Button, Input, Select,RTE} from '../index'
 import service from '../../appwrite/config' 
@@ -19,38 +19,69 @@ export default function PostForm({post}) {
 
     const navigate=useNavigate()
     const userData= useSelector(state =>state.auth.userData)
+    const [submitError, setSubmitError] = useState('')
 
     const submit= async (data)=>{
-        if(post){
-            const file =data.image[0] ?  await service.uploadFile(data.image[0]): null
-        
-            if(file){
-                service.deleteFile(post.featuredImage)
-            }
+        setSubmitError('')
+        // Destructure to strip out fields not stored in Appwrite collection:
+        // 'image' is a FileList, 'slug' is used as document ID — neither are DB attributes
+        const {image, slug, ...postData} = data
 
-            const dbPost =await service.updatePost(post.$id, {
-                ...data,
-                featuredImage: file? file.$id : post.featuredImage,
-            })
-            if(dbPost){
-                    navigate(`/post/${dbPost.$id}`)
-            }    
-        }else{
-            const file=await service.uploadFile(data.image[0]);
+        console.log('PostForm :: submit :: form data:', { slug, postData, hasImage: !!(image && image[0]), userId: userData?.$id })
 
-            if(file){
-                const fileId = file.$id
-                data.featuredImage=fileId
-                const dbPost=await service.createPost({
-                    ...data,
-                    userId: userData.$id,
+        try {
+            if(post){
+                // Edit mode: only upload a new file if one was selected
+                const file = image[0] ? await service.uploadFile(image[0]) : null
+            
+                if(file){
+                    service.deleteFile(post.featuredImage)
+                }
+
+                const dbPost = await service.updatePost(post.$id, {
+                    ...postData,
+                    featuredImage: file ? file.$id : post.featuredImage,
                 })
                 if(dbPost){
                     navigate(`/post/${dbPost.$id}`)
                 }
-            }
-        }
+            }else{
+                // Create mode: image is required
+                if (!image || !image[0]) {
+                    setSubmitError('Please select a featured image.')
+                    return
+                }
 
+                if (!userData?.$id) {
+                    setSubmitError('You must be logged in to create a post.')
+                    return
+                }
+
+                console.log('PostForm :: uploading file...')
+                const file = await service.uploadFile(image[0]);
+                console.log('PostForm :: file uploaded:', file)
+
+                console.log('PostForm :: creating post with:', {
+                    ...postData,
+                    slug,
+                    featuredImage: file.$id,
+                    userId: userData.$id,
+                })
+                const dbPost = await service.createPost({
+                    ...postData,
+                    slug,
+                    featuredImage: file.$id,
+                    userId: userData.$id,
+                })
+                console.log('PostForm :: post created:', dbPost)
+                if(dbPost){
+                    navigate(`/post/${dbPost.$id}`)
+                }
+            }
+        } catch (error) {
+            console.error('PostForm :: submit :: error', error)
+            setSubmitError(error?.message || 'Something went wrong. Please try again.')
+        }
     }
 
     const slugTransform= useCallback((value)=> {
@@ -59,7 +90,10 @@ export default function PostForm({post}) {
             .trim()
             .toLowerCase()
             .replace(/[^a-zA-Z\d\s]+/g, "-")
-            .replace(/\s/g, "-");
+            .replace(/\s/g, "-")
+            .replace(/^-+/, "")       // remove leading hyphens (invalid for Appwrite doc ID)
+            .replace(/-+$/, "")       // remove trailing hyphens
+            .substring(0, 36);        // Appwrite doc IDs max 36 chars
 
         }
         return ""
@@ -68,9 +102,8 @@ export default function PostForm({post}) {
     React.useEffect(()=>{
         const subscription= watch((value,{name})=> {
             if(name ==='title'){
-                setValue('slug', slugTransform(value.title,
-                    {shouldValidate: true}
-                ))
+                // Fix: shouldValidate belongs in setValue options, NOT in slugTransform
+                setValue('slug', slugTransform(value.title), {shouldValidate: true})
             }
         })
 
@@ -81,6 +114,11 @@ export default function PostForm({post}) {
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+        {submitError && (
+            <div className="w-full mb-4 px-2">
+                <p className="text-red-600 text-center font-medium">{submitError}</p>
+            </div>
+        )}
             <div className="w-2/3 px-2">
                 <Input
                     label="Title :"
@@ -110,7 +148,7 @@ export default function PostForm({post}) {
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={service.getFilePreview(post.featuredImage)}
+                            src={service.getFilePreview(post.featuredImage).href}
                             alt={post.title}
                             className="rounded-lg"
                         />
