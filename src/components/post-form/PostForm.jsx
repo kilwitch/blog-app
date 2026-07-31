@@ -7,10 +7,10 @@ import { useSelector } from 'react-redux'
 
 
 export default function PostForm({post}) {
-    const {register, handleSubmit, watch, setValue, control, getValues}= useForm({
+    const {register, handleSubmit, watch, setValue, control, getValues, reset}= useForm({
         defaultValues:{
             title: post?.title || '',
-            slug: post?.slug || '',
+            slug: post?.slug || post?.$id || '',
             content:post?.content || '',
             status: post?.status || 'active',
 
@@ -20,6 +20,34 @@ export default function PostForm({post}) {
     const navigate=useNavigate()
     const userData= useSelector(state =>state.auth.userData)
     const [submitError, setSubmitError] = useState('')
+    const [imagePreview, setImagePreview] = useState(null)
+
+    const selectedImage = watch("image")
+
+    React.useEffect(() => {
+        if (post) {
+            reset({
+                title: post.title || '',
+                slug: post.slug || post.$id || '',
+                content: post.content || '',
+                status: post.status || 'active',
+            })
+        }
+    }, [post, reset])
+
+    React.useEffect(() => {
+        if (selectedImage && selectedImage[0]) {
+            const file = selectedImage[0]
+            const previewUrl = URL.createObjectURL(file)
+            setImagePreview(previewUrl)
+
+            return () => {
+                URL.revokeObjectURL(previewUrl)
+            }
+        } else {
+            setImagePreview(null)
+        }
+    }, [selectedImage])
 
     const submit= async (data)=>{
         setSubmitError('')
@@ -32,10 +60,10 @@ export default function PostForm({post}) {
         try {
             if(post){
                 // Edit mode: only upload a new file if one was selected
-                const file = image[0] ? await service.uploadFile(image[0]) : null
+                const file = (image && image[0]) ? await service.uploadFile(image[0]) : null
             
                 if(file){
-                    service.deleteFile(post.featuredImage)
+                    await service.deleteFile(post.featuredImage)
                 }
 
                 const dbPost = await service.updatePost(post.$id, {
@@ -102,18 +130,20 @@ export default function PostForm({post}) {
     React.useEffect(()=>{
         const subscription= watch((value,{name})=> {
             if(name ==='title'){
-                // Fix: shouldValidate belongs in setValue options, NOT in slugTransform
-                setValue('slug', slugTransform(value.title), {shouldValidate: true})
+                // Only auto-generate slug in create mode (when post is not present)
+                if (!post) {
+                    setValue('slug', slugTransform(value.title), {shouldValidate: true})
+                }
             }
         })
 
         return ()=>{
             subscription.unsubscribe()
         }
-    },[watch, slugTransform, setValue])
+    },[watch, slugTransform, setValue, post])
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+    <form onSubmit={handleSubmit(submit, (errors) => console.error("PostForm :: Validation Errors ::", errors))} className="flex flex-wrap">
         {submitError && (
             <div className="w-full mb-4 px-2">
                 <p className="text-red-600 text-center font-medium">{submitError}</p>
@@ -126,13 +156,20 @@ export default function PostForm({post}) {
                     className="mb-4"
                     {...register("title", { required: true })}
                 />
-                <Input
+                 <Input
                     label="Slug :"
                     placeholder="Slug"
-                    className="mb-4"
-                    {...register("slug", { required: true })}
+                    className={`mb-4 ${post ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                    readOnly={!!post}
+                    {...register("slug", { required: !post })}
                     onInput={(e) => {
-                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
+                        if (!post) {
+                            setValue(
+                                "slug",
+                                slugTransform(e.currentTarget.value),
+                                { shouldValidate: true }
+                            );
+                        }
                     }}
                 />
                 <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
@@ -145,12 +182,15 @@ export default function PostForm({post}) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
-                {post && (
+                {(imagePreview || post?.featuredImage) && (
                     <div className="w-full mb-4">
+                        <p className="text-xs font-semibold mb-1 text-gray-500">
+                            {imagePreview ? "Selected New Image Preview:" : "Current Image:"}
+                        </p>
                         <img
-                            src={service.getFilePreview(post.featuredImage).href}
-                            alt={post.title}
-                            className="rounded-lg"
+                            src={imagePreview ? imagePreview : (service.getFilePreview(post.featuredImage)?.href || service.getFilePreview(post.featuredImage))}
+                            alt={post?.title || "Featured Image"}
+                            className="rounded-lg max-h-64 object-cover w-full"
                         />
                     </div>
                 )}

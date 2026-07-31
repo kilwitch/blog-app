@@ -1,3 +1,4 @@
+
 # Blog App 📝
 
 A modern full-stack blogging platform where users can create, edit, manage, and publish blog posts with a rich text editor. The application provides a clean user experience with authentication, state management, and seamless navigation.

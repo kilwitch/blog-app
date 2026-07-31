@@ -14,12 +14,12 @@ export default function RTE({name, control,
         <Controller
         name={name || "content"}
         control={control}
-        render={({field: {onChange}})=>(
+        render={({field: {onChange, value}})=>(
             <Editor
         apiKey={conf.tinykey}
         initialValue={defaultValue}
+        value={value !== undefined ? value : defaultValue}
         init={{
-            initialValue: defaultValue,
             height: 500,
             menubar: true,
             plugins: [
@@ -28,7 +28,6 @@ export default function RTE({name, control,
                 "autolink",
                 "lists",
                 "link",
-                "image",
                 "charmap",
                 "preview",
                 "anchor",
@@ -39,13 +38,11 @@ export default function RTE({name, control,
                 "insertdatetime",
                 "media",
                 "table",
-                "code",
                 "help",
                 "wordcount",
-                "anchor",
             ],
             toolbar:
-            "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
+            "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
             content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
         }}
         onEditorChange={onChange}
