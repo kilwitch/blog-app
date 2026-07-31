@@ -4,6 +4,7 @@ import service  from "../appwrite/config";
 import { Button, Container } from "../components";
 import parse from "html-react-parser";
 import { useSelector } from "react-redux";
+import DOMPurify from "dompurify";
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -59,7 +60,7 @@ export default function Post() {
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">
-                    {parse(post.content)}
+                    {parse(DOMPurify.sanatize(post.content))}
                     </div>
             </Container>
         </div>

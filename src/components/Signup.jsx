@@ -72,7 +72,13 @@ function Signup() {
                         type="password"
                         placeholder="Enter your password"
                         {...register("password", {
-                            required: true,})}
+                            required: true,
+                        validata: {
+                            matchPatern: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) ||
+                            "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+                        }
+                        })}
+                       
                         />
                         <Button type="submit" className="w-full">
                             Create Account
