@@ -17,16 +17,21 @@ import Signup from "./pages/Signup";
 import EditPost from "./pages/EditPost";
 import Post from "./pages/Post";
 import AllPosts from "./pages/AllPosts";
+import NotFound from "./pages/NotFound.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
+
 
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
 const router = sentryCreateBrowserRouter([
+  
   {
     path: "/",
-    element: <App />,
+    element: <App />, 
+    errorElement: <ErrorPage/>,
     children: [
       { path: "", element: <Home /> },
-
+      { path: "*", element: <NotFound /> },
       {
         path: "login",
         element: (
