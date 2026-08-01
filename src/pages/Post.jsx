@@ -60,7 +60,7 @@ export default function Post() {
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">
-                    {parse(DOMPurify.sanatize(post.content))}
+                    {parse(DOMPurify.sanitize(post.content))}
                     </div>
             </Container>
         </div>

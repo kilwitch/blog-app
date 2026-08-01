@@ -31,7 +31,7 @@ export class AuthService {
         } catch {
             // No active session, ignore error
         }
-        return await this.account.createEmailPasswordSession(email, password)
+        return await this.account.createEmailSession(email, password)
     } catch (error) {
         console.log("Appwrite :: login :: error", error)
         throw error
