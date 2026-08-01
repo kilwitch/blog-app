@@ -5,6 +5,7 @@ const conf= {
     appwriteCollectionId: String(import.meta.env.VITE_APPWRITE_COLLECTION_ID),
     appwriteBucketId: String(import.meta.env.VITE_APPWRITE_BUCKET_ID),
     tinykey:String(import.meta.env.VITE_TINYMCE_API_KEY),
+    sentryDSN:String(import.meta.env.VITE_SENTRY_DSN),
 }
 
 export default conf

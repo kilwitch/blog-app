@@ -1,5 +1,6 @@
 import conf from '../conf/conf.js';
 import {Client, Account, ID} from "appwrite"
+import * as Sentry from "@sentry/react";
 
 export class AuthService {
     client =new Client();
@@ -33,7 +34,10 @@ export class AuthService {
         }
         return await this.account.createEmailSession(email, password)
     } catch (error) {
-        console.log("Appwrite :: login :: error", error)
+        Sentry.withScope((scope)=>{
+            scope.setTag('location','Appwrite:: login');
+            Sentry.captureException(error);
+        })
         throw error
     }
 }
@@ -42,7 +46,11 @@ export class AuthService {
         try {
             return await this.account.get();
         } catch (error) {
-            console.log("Appwrite service :: getCurrentUser :: error", error)
+            Sentry.withScope((scope)=>{
+            scope.setTag('location','Appwrite service :: getCurrentUser :: error');
+            Sentry.captureException(error);
+        })
+            throw error;
         }
 
         return null;
@@ -52,7 +60,11 @@ export class AuthService {
         try {
             await this.account.deleteSessions()
         } catch (error) {
-            console.log("Appwrite service :: logout :: error", error)
+            Sentry.withScope((scope)=>{
+            scope.setTag('location','Appwrite service :: logout :: error');
+            Sentry.captureException(error);
+        })
+           
             
         }
     }

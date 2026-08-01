@@ -4,6 +4,7 @@ import {Button, Input, Select,RTE} from '../index'
 import service from '../../appwrite/config' 
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import * as Sentry from '@sentry/react'
 
 
 export default function PostForm({post}) {
@@ -38,12 +39,11 @@ export default function PostForm({post}) {
     React.useEffect(() => {
         if (selectedImage && selectedImage[0]) {
             const file = selectedImage[0]
-            const previewUrl = URL.createObjectURL(file)
-            setImagePreview(previewUrl)
-
-            return () => {
-                URL.revokeObjectURL(previewUrl)
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setImagePreview(reader.result)
             }
+            reader.readAsDataURL(file)
         } else {
             setImagePreview(null)
         }
@@ -55,7 +55,12 @@ export default function PostForm({post}) {
         // 'image' is a FileList, 'slug' is used as document ID — neither are DB attributes
         const {image, slug, ...postData} = data
 
-        console.log('PostForm :: submit :: form data:', { slug, postData, hasImage: !!(image && image[0]), userId: userData?.$id })
+        Sentry.addBreadcrumb({
+            category: 'post-form',
+            message: 'Submitting post form',
+            data: { slug, hasImage: !!(image && image[0]), userId: userData?.$id },
+            level: 'info'
+        })
 
         try {
             if(post){
@@ -85,29 +90,34 @@ export default function PostForm({post}) {
                     return
                 }
 
-                console.log('PostForm :: uploading file...')
-                const file = await service.uploadFile(image[0]);
-                console.log('PostForm :: file uploaded:', file)
-
-                console.log('PostForm :: creating post with:', {
-                    ...postData,
-                    slug,
-                    featuredImage: file.$id,
-                    userId: userData.$id,
+                Sentry.addBreadcrumb({
+                    category: 'post-form',
+                    message: 'Uploading post file',
+                    level: 'info'
                 })
+                const file = await service.uploadFile(image[0]);
+
+                Sentry.addBreadcrumb({
+                    category: 'post-form',
+                    message: `File uploaded successfully: ${file.$id}`,
+                    level: 'info'
+                })
+
                 const dbPost = await service.createPost({
                     ...postData,
                     slug,
                     featuredImage: file.$id,
                     userId: userData.$id,
                 })
-                console.log('PostForm :: post created:', dbPost)
                 if(dbPost){
                     navigate(`/post/${dbPost.$id}`)
                 }
             }
         } catch (error) {
-            console.error('PostForm :: submit :: error', error)
+            Sentry.withScope((scope) => {
+                scope.setTag('location', 'PostForm :: submit');
+                Sentry.captureException(error);
+            });
             setSubmitError(error?.message || 'Something went wrong. Please try again.')
         }
     }
@@ -143,7 +153,13 @@ export default function PostForm({post}) {
     },[watch, slugTransform, setValue, post])
 
   return (
-    <form onSubmit={handleSubmit(submit, (errors) => console.error("PostForm :: Validation Errors ::", errors))} className="flex flex-wrap">
+    <form onSubmit={handleSubmit(submit, (errors) => {
+        Sentry.withScope((scope) => {
+            scope.setTag('location', 'PostForm :: validation');
+            scope.setExtra('validationErrors', errors);
+            Sentry.captureMessage('PostForm validation failed', 'warning');
+        });
+    })} className="flex flex-wrap">
         {submitError && (
             <div className="w-full mb-4 px-2">
                 <p className="text-red-600 text-center font-medium">{submitError}</p>

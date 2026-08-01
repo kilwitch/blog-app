@@ -1,5 +1,6 @@
 import conf from '../conf/conf.js'
 import {Client, Databases,ID,Storage, Query } from "appwrite"
+import * as Sentry from "@sentry/react"
 
 export class Service{
     client= new Client();
@@ -7,7 +8,11 @@ export class Service{
     bucket;
 
     constructor(){
-        console.log("Appwrite URL:", conf.appwriteUrl)
+        Sentry.addBreadcrumb({
+            category: "appwrite",
+            message: `Appwrite initialized with endpoint ${conf.appwriteUrl}`,
+            level: "info"
+        });
         this.client
         .setEndpoint(conf.appwriteUrl)
         .setProject(conf.appwriteProjectId);
@@ -30,7 +35,11 @@ export class Service{
                 }
         )
         } catch (error) {
-            console.log("Appwrite service :: createPost :: error", error)
+            Sentry.withScope((scope) => {
+        scope.setTag("location", "Appwrite :: createPost :: error");
+        Sentry.captureException(error);
+    });
+           
             throw error
         }
     }
@@ -49,7 +58,11 @@ export class Service{
                 }
         )
     } catch (error) {
-            console.log("Appwrite service :: updatePost :: error", error)
+        Sentry.withScope((scope) => {
+        scope.setTag("location", "Appwrite :: updatePost :: error");
+        Sentry.captureException(error);
+            });
+            
             throw error
         }   
     }
@@ -62,7 +75,11 @@ export class Service{
             )
             return true;
         } catch (error) {
-            console.log("Appwrite service :: deletePost :: error", error)
+            Sentry.withScope((scope) => {
+        scope.setTag("location", "Appwrite :: deletePost :: error");
+        Sentry.captureException(error);
+    });
+            
             return false;     
         }
        
@@ -76,8 +93,12 @@ export class Service{
                 slug,
             )
         } catch (error) {
-            console.log("Appwrite service :: getPost :: error", error)
-            
+            Sentry.withScope((scope) => {
+            scope.setTag("location", "Appwrite :: getPost :: error");
+            Sentry.captureException(error);
+            });
+           
+            throw error;
         }
     }
 
@@ -90,7 +111,10 @@ export class Service{
 
             )
         } catch (error) {
-            console.log("Appwrite service :: getPosts:: error", error);
+            Sentry.withScope((scope) => {
+            scope.setTag("location", "Appwrite :: getPosts:: error");
+            Sentry.captureException(error);
+            });
             return false;
         }
     }
@@ -107,7 +131,11 @@ export class Service{
                 // ]
             )
         } catch (error) {
-            console.log("Appwrite service :: uploadFile:: error", error);
+            Sentry.withScope((scope) => {
+            scope.setTag("location", "Appwrite :: uploadFile:: error");
+            Sentry.captureException(error);
+            });
+            
             throw error
         }
     }
@@ -120,7 +148,11 @@ export class Service{
             )
             return true;
         } catch (error) {
-            console.log("Appwrite service :: deleteFile:: error", error);
+            Sentry.withScope((scope) => {
+            scope.setTag("location", "Appwrite :: deleteFile:: error");
+            Sentry.captureException(error);
+            });
+           
             return false;
         }
         
