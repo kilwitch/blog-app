@@ -3,6 +3,7 @@ import service from '../appwrite/config'
 import {Container, PostCard} from '../components'
 import PostSkeleton from '../components/PostSkeleton'
 import { useSelector } from 'react-redux'
+import { Query } from 'appwrite'
 
 function Home() {
     const [posts, setPosts]= useState([])
@@ -14,7 +15,12 @@ function Home() {
 
         const minDelay= new Promise(resolve => setTimeout(resolve, 600));
 
-        Promise.all([service.getPosts(), minDelay]).then(([postsResponse]) => {
+        const queries= [
+            Query.equal("status", "active"),
+            Query.orderDesc("$createdAt"),
+            Query.limit(4),
+        ]
+        Promise.all([service.getPosts(queries), minDelay]).then(([postsResponse]) => {
             if (postsResponse && postsResponse.documents) {
                 setPosts(postsResponse.documents);
             } else {

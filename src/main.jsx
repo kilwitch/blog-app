@@ -10,16 +10,19 @@ import App from "./App.jsx";
 import "./index.css";
 import store from "./store/store.js";
 
-import Home from "./pages/Home.jsx";
-import { AuthLayout, Login } from "./components/index.js";
-import AddPost from "./pages/AddPost";
-import Signup from "./pages/Signup";
-import EditPost from "./pages/EditPost";
-import Post from "./pages/Post";
-import AllPosts from "./pages/AllPosts";
-import NotFound from "./pages/NotFound.jsx";
+
+
+import { AuthLayout } from "./components/index.js";
 import ErrorPage from "./pages/ErrorPage.jsx";
 
+const Home = React.lazy(() => import("./pages/Home.jsx"));
+const Login = React.lazy(() => import("./pages/Login.jsx"));
+const Signup = React.lazy(() => import("./pages/Signup.jsx"));
+const AllPosts = React.lazy(() => import("./pages/AllPosts.jsx"));
+const AddPost = React.lazy(() => import("./pages/AddPost.jsx"));
+const EditPost = React.lazy(() => import("./pages/EditPost.jsx"));
+const Post = React.lazy(() => import("./pages/Post.jsx"));
+const NotFound = React.lazy(() => import("./pages/NotFound.jsx"));
 
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
