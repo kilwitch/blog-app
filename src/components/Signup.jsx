@@ -5,6 +5,7 @@ import {login} from '../store/authSlice'
 import {Button, Input, Logo} from './index.js'
 import {useDispatch} from 'react-redux'
 import {useForm} from 'react-hook-form'
+import { toast } from 'sonner'
 
 function Signup() {
     const navigate = useNavigate()
@@ -19,10 +20,13 @@ function Signup() {
             if (userData) {
                 const currentUser = await authService.getCurrentUser()
                 if(currentUser) dispatch(login({userData: currentUser}));
+                toast.success("Account created successfully! Welcome to BlogSite.")
                 navigate("/")
             }
         } catch (error) {
-            setError(error.message)
+            const errorMsg = error?.message || "Failed to create account. Please try again."
+            setError(errorMsg)
+            toast.error(errorMsg)
         }
     }
 

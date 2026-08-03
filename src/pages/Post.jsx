@@ -5,6 +5,9 @@ import { Button, Container } from "../components";
 import parse from "html-react-parser";
 import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
+import { toast } from "sonner";
+
+import { calculateReadingTime } from "../utils/readTime";
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -32,12 +35,19 @@ export default function Post() {
 
     const deletePost = () => {
         setShowConfirmModal(false);
-        service.deletePost(post.$id).then((status) => {
-            if (status) {
-                service.deleteFile(post.featuredImage);
-                navigate("/");
-            }
-        });
+        service.deletePost(post.$id)
+            .then((status) => {
+                if (status) {
+                    service.deleteFile(post.featuredImage);
+                    toast.success("Post deleted successfully.");
+                    navigate("/");
+                } else {
+                    toast.error("Failed to delete post. Please try again.");
+                }
+            })
+            .catch((error) => {
+                toast.error(error?.message || "Failed to delete post. Please try again.");
+            });
     };
 
     return post ? (
@@ -81,6 +91,13 @@ export default function Post() {
                             ))}
                         </div>
                     )}
+
+                     {/* Reading Time Badge */}
+                    <div className="flex items-center gap-2 text-xs text-gray-500 font-medium mb-2">
+                        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md border border-gray-200">
+                            ⏱️ {calculateReadingTime(post.content)}
+                        </span>
+                    </div>
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">

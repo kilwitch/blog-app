@@ -5,10 +5,13 @@ import service from '../../appwrite/config'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import * as Sentry from '@sentry/react'
+import { toast } from 'sonner'
 
 
 export default function PostForm({post}) {
-    const {register, handleSubmit, watch, setValue, control, getValues, reset}= useForm({
+    const {register, handleSubmit, watch, setValue, control, getValues, reset,
+        formState :{errors}
+    }= useForm({
         defaultValues:{
             title: post?.title || '',
             slug: post?.slug || post?.$id || '',
@@ -97,17 +100,22 @@ export default function PostForm({post}) {
                     tags, // pass atgs state
                 })
                 if(dbPost){
+                    toast.success("Post updated successfully!")
                     navigate(`/post/${dbPost.$id}`)
                 }
             }else{
                 // Create mode: image is required
                 if (!image || !image[0]) {
-                    setSubmitError('Please select a featured image.')
+                    const errorMsg = 'Please select a featured image.'
+                    setSubmitError(errorMsg)
+                    toast.error(errorMsg)
                     return
                 }
 
                 if (!userData?.$id) {
-                    setSubmitError('You must be logged in to create a post.')
+                    const errorMsg = 'You must be logged in to create a post.'
+                    setSubmitError(errorMsg)
+                    toast.error(errorMsg)
                     return
                 }
 
@@ -132,6 +140,7 @@ export default function PostForm({post}) {
                     tags, //pass tag state
                 })
                 if(dbPost){
+                    toast.success("Post published successfully!")
                     navigate(`/post/${dbPost.$id}`)
                 }
             }
@@ -140,7 +149,19 @@ export default function PostForm({post}) {
                 scope.setTag('location', 'PostForm :: submit');
                 Sentry.captureException(error);
             });
-            setSubmitError(error?.message || 'Something went wrong. Please try again.')
+
+            const isConflict = 
+                error?.code === 409 || 
+                error?.status === 409 || 
+                error?.type === 'document_already_exists' || 
+                error?.message?.toLowerCase().includes('already exists');
+
+            const errorMsg = isConflict
+                ? 'A post with this title already exists. Please choose a different title.'
+                : (error?.message || 'Something went wrong. Please try again.');
+
+            setSubmitError(errorMsg);
+            toast.error(errorMsg);
         }
     }
 
@@ -216,10 +237,27 @@ export default function PostForm({post}) {
                 <Input
                     label="Featured Image :"
                     type="file"
-                    className="mb-4"
-                    accept="image/png, image/jpg, image/jpeg, image/gif"
-                    {...register("image", { required: !post })}
+                    className="mb-1"
+                    accept="image/png, image/jpg, image/jpeg, image/gif, image/webp"
+                    {...register("image", {
+                        required: !post ? "Featured image is required" : false,
+                        validate: {
+                            fileSize: (files) => {
+                                if (!files || !files[0]) return true;
+                                const MAX_SIZE = 5 * 1024 * 1024;
+                                return files[0].size <= MAX_SIZE || "Image size must be under 5MB";
+                            },
+                            fileType: (files) => {
+                                if (!files || !files[0]) return true;
+                                const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp"];
+                                return allowedTypes.includes(files[0].type) || "Only JPG, PNG, GIF, and WEBP images are allowed";
+                            }
+                        }
+                    })}
                 />
+                {errors.image && (
+                    <p className="text-red-500 text-xs font-medium mb-3">{errors.image.message}</p>
+                )}
                 {(imagePreview || post?.featuredImage) && (
                     <div className="w-full mb-4">
                         <p className="text-xs font-semibold mb-1 text-gray-500">

@@ -5,6 +5,7 @@ import {Button, Input, Logo} from './index'
 import { useDispatch ,useSelector} from 'react-redux'
 import authService from '../appwrite/auth'
 import {useForm} from 'react-hook-form'
+import { toast } from 'sonner'
 
 function Login() {
     const navigate= useNavigate()
@@ -36,10 +37,13 @@ function Login() {
                 
 
                 if(userData) dispatch(authLogin({userData}))
+                toast.success("Welcome back! Signed in successfully.")
                 navigate("/")
             }
         } catch (error) {
-            setError(error.message)
+            const errorMsg = error?.message || "Failed to sign in. Please check your credentials."
+            setError(errorMsg)
+            toast.error(errorMsg)
         }
     }
 

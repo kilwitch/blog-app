@@ -22,6 +22,8 @@ const AllPosts = React.lazy(() => import("./pages/AllPosts.jsx"));
 const AddPost = React.lazy(() => import("./pages/AddPost.jsx"));
 const EditPost = React.lazy(() => import("./pages/EditPost.jsx"));
 const Post = React.lazy(() => import("./pages/Post.jsx"));
+const MyPosts= React.lazy(()=>import('./pages/MyPosts.jsx'));
+
 const NotFound = React.lazy(() => import("./pages/NotFound.jsx"));
 
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
@@ -58,6 +60,14 @@ const router = sentryCreateBrowserRouter([
         element: (
           <AuthLayout authentication>
             <AllPosts />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "my-posts",
+        element: (
+          <AuthLayout authentication>
+            <MyPosts />
           </AuthLayout>
         ),
       },
