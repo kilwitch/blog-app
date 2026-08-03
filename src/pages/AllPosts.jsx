@@ -53,10 +53,12 @@ function AllPosts() {
                     fetchedPosts = fetchedPosts.filter(post =>
                         post.tags && Array.isArray(post.tags) && post.tags.includes(tagQuery.trim())
                     );
+                    setTotalPosts(fetchedPosts.length);
+                } else {
+                    setTotalPosts(postsResponse.total);
                 }
 
                 setPosts(fetchedPosts);
-                setTotalPosts(fetchedPosts.length);
             } else {
                 setPosts([]);
                 setTotalPosts(0);

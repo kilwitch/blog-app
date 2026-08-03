@@ -114,7 +114,10 @@ export class Service{
         } catch (error) {
 
             // Fallback: If query failed (e.g. missing composite index for orderDesc), retry without orderDesc
-            const fallbackQueries = queries.filter(q => typeof q === 'string' ? !q.includes('order') : true);
+            const fallbackQueries = queries.filter(q => {
+                const qStr = typeof q === 'string' ? q : JSON.stringify(q);
+                return !qStr.includes('order');
+            });
             if (fallbackQueries.length < queries.length) {
                 try {
                     return await this.databases.listDocuments(
