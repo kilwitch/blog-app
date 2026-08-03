@@ -25,6 +25,25 @@ export default function PostForm({post}) {
 
     const selectedImage = watch("image")
 
+    //tags
+    const[tags, setTags]= useState(post?.tags || []);
+    const [tagInput, setTagInput]= useState('');
+
+
+    // tag handler
+    const handleAddTag=(e)=>{
+        e.preventDefault();
+        const trimmed= tagInput.trim();
+        if(trimmed && !tags.includes(trimmed)){
+            setTags([...tags, trimmed]);
+            setTagInput('');
+        }
+    }
+
+    // delete tags
+    const handleRemoveTag= (tagToRemove)=>{
+        setTags(tags.filter((tag)=> tag !== tagToRemove));
+    }
     React.useEffect(() => {
         if (post) {
             reset({
@@ -33,6 +52,7 @@ export default function PostForm({post}) {
                 content: post.content || '',
                 status: post.status || 'active',
             })
+            setTags(post.tags || [])
         }
     }, [post, reset])
 
@@ -74,6 +94,7 @@ export default function PostForm({post}) {
                 const dbPost = await service.updatePost(post.$id, {
                     ...postData,
                     featuredImage: file ? file.$id : post.featuredImage,
+                    tags, // pass atgs state
                 })
                 if(dbPost){
                     navigate(`/post/${dbPost.$id}`)
@@ -108,6 +129,7 @@ export default function PostForm({post}) {
                     slug,
                     featuredImage: file.$id,
                     userId: userData.$id,
+                    tags, //pass tag state
                 })
                 if(dbPost){
                     navigate(`/post/${dbPost.$id}`)
@@ -210,6 +232,47 @@ export default function PostForm({post}) {
                         />
                     </div>
                 )}
+
+                <div className="mb-4">
+                        <label className="inline-block mb-1 pl-1 font-semibold text-gray-700">Tags :</label>
+                        <div className="flex gap-2 mb-2">
+                            <input
+                                type="text"
+                                placeholder="Add tag (e.g. React)"
+                                value={tagInput}
+                                onChange={(e) => setTagInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleAddTag(e);
+                                    }
+                                }}
+                                className="w-full px-3 py-1.5 rounded-lg bg-white text-black outline-none border border-gray-300 text-sm"
+                            />
+                            <Button type="button" onClick={handleAddTag} bgColor="bg-blue-500" className="px-3 py-1 text-sm">
+                                Add
+                            </Button>
+                        </div>
+                        {/* Display Active Tags with Delete '×' Button */}
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                            {tags.map((tag, index) => (
+                                <span
+                                    key={index}
+                                    className="inline-flex items-center px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full"
+                                >
+                                    {tag}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className="ml-1.5 text-blue-600 hover:text-blue-900 font-bold"
+                                    >
+                                        ×
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                </div>
+
                 <Select
                     options={["active", "inactive"]}
                     label="Status"

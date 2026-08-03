@@ -64,6 +64,23 @@ export default function Post() {
                     )}
                 </div>
                 <div className="w-full mb-6">
+                    {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {post.tags.map((tag, index) => (
+                                <span
+                                    key={index}
+                                    onClick={(e)=>{
+                                        e.preventDefault();
+                                        navigate(`/all-posts?tag=${encodeURIComponent(tag)}`)
+                                    }}
+
+                                    className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">

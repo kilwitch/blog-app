@@ -15,7 +15,7 @@ function Home() {
 
         const minDelay= new Promise(resolve => setTimeout(resolve, 600));
 
-        const queries= [
+        const queries = [
             Query.equal("status", "active"),
             Query.orderDesc("$createdAt"),
             Query.limit(4),

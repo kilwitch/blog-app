@@ -20,7 +20,7 @@ export class Service{
         this.bucket= new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}){
+    async createPost({title, slug, content, featuredImage, status, userId, tags=[] }){
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -32,6 +32,7 @@ export class Service{
                     featuredImage,
                     status,
                     userid: userId,
+                    tags,
                 }
         )
         } catch (error) {
@@ -44,7 +45,7 @@ export class Service{
         }
     }
 
-    async updatePost(slug,{title, content, featuredImage, status}){
+    async updatePost(slug,{title, content, featuredImage, status, tags=[] }){
     try {
         return await this.databases.updateDocument(
             conf.appwriteDatabaseId,
@@ -55,6 +56,7 @@ export class Service{
                     content,
                     featuredImage,
                     status,
+                    tags,
                 }
         )
     } catch (error) {
@@ -102,18 +104,35 @@ export class Service{
         }
     }
 
-    async getPosts(queries= [Query.equal("status", "active")]){
+    async getPosts(queries = [Query.equal("status", "active")]) {
         try {
             return await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 queries,
-
-            )
+            );
         } catch (error) {
+
+            // Fallback: If query failed (e.g. missing composite index for orderDesc), retry without orderDesc
+            const fallbackQueries = queries.filter(q => typeof q === 'string' ? !q.includes('order') : true);
+            if (fallbackQueries.length < queries.length) {
+                try {
+                    return await this.databases.listDocuments(
+                        conf.appwriteDatabaseId,
+                        conf.appwriteCollectionId,
+                        fallbackQueries
+                    );
+                } catch (fallbackError) {
+                    Sentry.withScope((scope) => {
+                        scope.setTag("location", "Appwrite :: getPosts fallback error:");
+                        Sentry.captureException(fallbackError);
+                    });
+                }
+            }
+
             Sentry.withScope((scope) => {
-            scope.setTag("location", "Appwrite :: getPosts:: error");
-            Sentry.captureException(error);
+                scope.setTag("location", "Appwrite :: getPosts:: error");
+                Sentry.captureException(error);
             });
             return false;
         }

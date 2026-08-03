@@ -1,46 +1,71 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import service from '../appwrite/config'
-import { PostCard,Container } from '../components'
+import { PostCard, Container } from '../components'
 import PostSkeleton from '../components/PostSkeleton'
 import { Query } from 'appwrite'
-
+import { useSearchParams, useNavigate } from 'react-router-dom'
 
 function AllPosts() {
-    const [posts, setPosts]= useState([])
-    const[loading, setLoading]= useState(true);
+    const [posts, setPosts] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [searchParams] = useSearchParams()
+    const navigate = useNavigate()
 
-    //pagination
-    const[page, setPage]= useState(1);
-    const [totalPosts, setTotalPosts]= useState(0);
-    const POSTS_PER_PAGE=8;
+    // Read search term from URL (e.g. /all-posts?q=react)
+    const urlQuery = searchParams.get('q') || ''
+
+    const tagQuery= searchParams.get('tag')|| '';
+
+    // Pagination
+    const [page, setPage] = useState(1)
+    const [totalPosts, setTotalPosts] = useState(0)
+    const POSTS_PER_PAGE = 8
+
+    // Reset page to 1 whenever search query changes
+    useEffect(() => {
+        setPage(1);
+    }, [urlQuery, tagQuery]);
 
     useEffect(() => {
-        setLoading(true);
+        setLoading(true)
 
-        const offset= (page-1)*POSTS_PER_PAGE
-        const limit= POSTS_PER_PAGE
+        const offset = (page - 1) * POSTS_PER_PAGE
 
-        const queries= [
+        const queries = [
             Query.equal("status", "active"),
+            Query.orderDesc("$createdAt"),
             Query.limit(POSTS_PER_PAGE),
             Query.offset(offset),
         ]
-    const minDelay= new Promise(resolve => setTimeout(resolve, 600));
 
-    Promise.all([service.getPosts(queries), minDelay]).then(([postsResponse]) => {
-        if (postsResponse && postsResponse.documents) {
-            setPosts(postsResponse.documents);
-            setTotalPosts(postsResponse.total);
-
-        } else {
-            setPosts([]);
-            setTotalPosts(0);
+        if (urlQuery.trim() !== "") {
+            queries.push(Query.search("title", urlQuery.trim()))
         }
-    }).finally(() => {
-        setLoading(false);
-    })
-}, [page]) // refetch whenever page cahnages
-    
+
+        const minDelay = new Promise(resolve => setTimeout(resolve, 600))
+
+        Promise.all([service.getPosts(queries), minDelay]).then(([postsResponse]) => {
+            if (postsResponse && postsResponse.documents) {
+                let fetchedPosts = postsResponse.documents;
+
+                // Client-side tag filtering (bypasses Appwrite array index limitation)
+                if (tagQuery.trim() !== "") {
+                    fetchedPosts = fetchedPosts.filter(post =>
+                        post.tags && Array.isArray(post.tags) && post.tags.includes(tagQuery.trim())
+                    );
+                }
+
+                setPosts(fetchedPosts);
+                setTotalPosts(fetchedPosts.length);
+            } else {
+                setPosts([]);
+                setTotalPosts(0);
+            }
+        }).finally(() => {
+            setLoading(false);
+        })
+    }, [page, urlQuery, tagQuery])
+
     if (loading) {
         return (
             <div className='w-full py-8'>
@@ -57,10 +82,31 @@ function AllPosts() {
         )
     }
 
-    const totalPages= Math.ceil(totalPosts/ POSTS_PER_PAGE) ||1;
-  return (
-    <div className='w-full py-8'>
-        <Container>
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE) || 1;
+
+    return (
+        <div className='w-full py-8'>
+            <Container>
+                {urlQuery && (
+                    <div className="mb-6 text-gray-700 font-medium">
+                        Showing results for: <span className="font-bold text-gray-900">"{urlQuery}"</span>
+                    </div>
+                )}
+
+                {tagQuery && (
+                    <div className="mb-6 flex items-center gap-2">
+                        <span className="text-gray-700 font-medium">Filtered by tag:</span>
+                        <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 font-semibold rounded-full text-sm">
+                            {tagQuery}
+                            <button
+                                onClick={() => navigate('/all-posts')}
+                                className="ml-2 text-blue-600 hover:text-blue-900 font-bold"
+                            >
+                                ×
+                            </button>
+                        </span>
+                    </div>
+                )}
             <div className='flex flex-wrap'>
                 {posts.map((post)=>(
                     <div key={post.$id} className='p-2 w-1/4'>
