@@ -1,49 +1,28 @@
-import React ,{useState,useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
-import {login as authLogin} from '../store/authSlice'
-import {Button, Input, Logo} from './index'
-import { useDispatch ,useSelector} from 'react-redux'
-import authService from '../appwrite/auth'
-import {useForm} from 'react-hook-form'
-import { toast } from 'sonner'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input, Logo } from './index'
+import { useForm } from 'react-hook-form'
+import { useAuth } from '../hooks/useAuth'
 
 function Login() {
-    const navigate= useNavigate()
-    const dispatch= useDispatch()
-    const authStatus=useSelector(state =>state.auth.status) // for logi issue
-    const {register, handleSubmit}= useForm()
-    const [error,setError]= useState("")
+    const navigate = useNavigate()
+    const { login, isAuthenticated, loading } = useAuth()
+    const { register, handleSubmit } = useForm()
+    const [error, setError] = useState("")
 
     useEffect(() => {
-        if(authStatus) {
+        if (isAuthenticated) {
             navigate('/')
         }
-    }, [authStatus, navigate])
+    }, [isAuthenticated, navigate])
 
-    const login= async (data)=>{
+    const handleLogin = async (data) => {
         setError("")
         try {
-
-            try {
-                await authService.logout()
-            } catch {
-                // ignore, no active session
-            }
-            const session=await authService.login(data)
-            
-
-            if(session){
-                const userData=await authService.getCurrentUser()
-                
-
-                if(userData) dispatch(authLogin({userData}))
-                toast.success("Welcome back! Signed in successfully.")
-                navigate("/")
-            }
-        } catch (error) {
-            const errorMsg = error?.message || "Failed to sign in. Please check your credentials."
-            setError(errorMsg)
-            toast.error(errorMsg)
+            await login(data)
+            navigate("/")
+        } catch (err) {
+            setError(err?.message || "Failed to sign in. Please check your credentials.")
         }
     }
 
@@ -73,7 +52,7 @@ function Login() {
                     </Link>
         </p>
         {error && <p className='text-red-600 mt-8 text-center'>{error}</p>}
-        <form onSubmit={handleSubmit(login)}
+        <form onSubmit={handleSubmit(handleLogin)}
         className='mt-8'
         >
             <div className='space-y-5'>

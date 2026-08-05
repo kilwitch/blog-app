@@ -1,32 +1,22 @@
-import React, {useState} from 'react'
-import authService from '../appwrite/auth'
-import {Link ,useNavigate} from 'react-router-dom'
-import {login} from '../store/authSlice'
-import {Button, Input, Logo} from './index.js'
-import {useDispatch} from 'react-redux'
-import {useForm} from 'react-hook-form'
-import { toast } from 'sonner'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input, Logo } from './index.js'
+import { useForm } from 'react-hook-form'
+import { useAuth } from '../hooks/useAuth'
 
 function Signup() {
     const navigate = useNavigate()
     const [error, setError] = useState("")
-    const dispatch = useDispatch()
-    const {register, handleSubmit} = useForm()
+    const { signup } = useAuth()
+    const { register, handleSubmit } = useForm()
 
-    const create = async(data) => {
+    const create = async (data) => {
         setError("")
         try {
-            const userData = await authService.createAccount(data)
-            if (userData) {
-                const currentUser = await authService.getCurrentUser()
-                if(currentUser) dispatch(login({userData: currentUser}));
-                toast.success("Account created successfully! Welcome to BlogSite.")
-                navigate("/")
-            }
-        } catch (error) {
-            const errorMsg = error?.message || "Failed to create account. Please try again."
-            setError(errorMsg)
-            toast.error(errorMsg)
+            await signup(data)
+            navigate("/")
+        } catch (err) {
+            setError(err?.message || "Failed to create account. Please try again.")
         }
     }
 

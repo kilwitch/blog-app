@@ -1,40 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import service from '../appwrite/config';
+import React, { useMemo } from 'react';
 import { Container, PostCard } from '../components';
 import PostSkeleton from '../components/PostSkeleton';
 import { useSelector } from 'react-redux';
 import { Query } from 'appwrite';
 import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
+import { usePosts } from '../hooks/usePosts';
 
 function MyPosts() {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const userData = useSelector((state) => state.auth.userData);
 
-    useEffect(() => {
-        if (userData?.$id) {
-            setLoading(true);
-            const queries = [
-                Query.equal("userid", userData.$id),
-                Query.orderDesc("$createdAt")
-            ];
+    const userQueries = useMemo(() => {
+        if (!userData?.$id) return []
+        return [
+            Query.equal("userid", userData.$id),
+            Query.orderDesc("$createdAt")
+        ]
+    }, [userData?.$id])
 
-            service.getPosts(queries)
-                .then((response) => {
-                    if (response && response.documents) {
-                        setPosts(response.documents);
-                    } else {
-                        setPosts([]);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching user posts:", error);
-                    toast.error("Failed to load your posts.");
-                })
-                .finally(() => setLoading(false));
-        }
-    }, [userData]);
+    const { posts, loading } = usePosts(userQueries)
 
     if (loading) {
         return (

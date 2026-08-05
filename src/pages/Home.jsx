@@ -1,35 +1,20 @@
-import React ,{useState, useEffect}from 'react'
-import service from '../appwrite/config'
-import {Container, PostCard} from '../components'
+import React, { useMemo } from 'react'
+import { Container, PostCard } from '../components'
 import PostSkeleton from '../components/PostSkeleton'
 import { useSelector } from 'react-redux'
 import { Query } from 'appwrite'
+import { usePosts } from '../hooks/usePosts'
 
 function Home() {
-    const [posts, setPosts]= useState([])
-    const [loading, setLoading]= useState(true);
-    const authStatus= useSelector(state=> state.auth.status); // get auth sapce
+    const authStatus = useSelector(state => state.auth.status)
 
-    useEffect(()=>{
-        setLoading(true);
+    const homeQueries = useMemo(() => [
+        Query.equal("status", "active"),
+        Query.orderDesc("$createdAt"),
+        Query.limit(4),
+    ], [])
 
-        const minDelay= new Promise(resolve => setTimeout(resolve, 600));
-
-        const queries = [
-            Query.equal("status", "active"),
-            Query.orderDesc("$createdAt"),
-            Query.limit(4),
-        ]
-        Promise.all([service.getPosts(queries), minDelay]).then(([postsResponse]) => {
-            if (postsResponse && postsResponse.documents) {
-                setPosts(postsResponse.documents);
-            } else {
-                setPosts([]);
-            }
-        }).finally(() => {
-            setLoading(false); // false when loading complete
-        })
-    },[])
+    const { posts, loading } = usePosts(homeQueries)
 
     if(loading){
         return (

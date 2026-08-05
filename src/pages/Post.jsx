@@ -1,53 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import service  from "../appwrite/config";
+import service from "../appwrite/config";
 import { Button, Container } from "../components";
 import parse from "html-react-parser";
 import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
-import { toast } from "sonner";
-
 import { calculateReadingTime } from "../utils/readTime";
+import { usePost } from "../hooks/usePost";
 
 export default function Post() {
-    const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
+    const { post, loading, deletePost } = usePost(slug);
 
-    const [showConfirmModal, setShowConfirmModal]= useState(false);
-
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const userData = useSelector((state) => state.auth.userData);
 
     const isAuthor = post && userData ? post.userid === userData.$id : false;
 
-    useEffect(() => {
-        if (slug) {
-            service.getPost(slug).then((post) => {
-                if (post) setPost(post);
-                else navigate("/");
-            });
-        } else navigate("/");
-    }, [slug, navigate]);
+    const handleDeleteClick = () => {
+        setShowConfirmModal(true);
+    };
 
-    const handleDeleteClick =()=>{
-        setShowConfirmModal(true); // open modal
-    }
-
-    const deletePost = () => {
+    const handleDeleteConfirm = async () => {
         setShowConfirmModal(false);
-        service.deletePost(post.$id)
-            .then((status) => {
-                if (status) {
-                    service.deleteFile(post.featuredImage);
-                    toast.success("Post deleted successfully.");
-                    navigate("/");
-                } else {
-                    toast.error("Failed to delete post. Please try again.");
-                }
-            })
-            .catch((error) => {
-                toast.error(error?.message || "Failed to delete post. Please try again.");
-            });
+        await deletePost();
     };
 
     return post ? (
@@ -121,7 +98,7 @@ export default function Post() {
                                 </Button>
                                 <Button 
                                     bgColor="bg-red-600" 
-                                    onClick={deletePost}
+                                    onClick={handleDeleteConfirm}
                                 >
                                     Delete Permanently
                                 </Button>
