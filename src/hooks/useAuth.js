@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react'
 import authService from '../appwrite/auth'
 import { login as authLogin, logout as authLogout } from '../store/authSlice'
 import { toast } from 'sonner'
+import { useDispatch, useSelector } from 'react-redux'
 
 export function useAuth() {
     const [loading, setLoading] = useState(false)

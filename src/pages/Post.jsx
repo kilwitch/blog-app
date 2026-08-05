@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
 import { calculateReadingTime } from "../utils/readTime";
 import { usePost } from "../hooks/usePost";
+import { CommentSection } from "../components/Comments";
+import { VoteButtons } from "../components/VoteButtons";
+import { Clock, Pencil, Trash2, Tag as TagIcon } from "lucide-react";
 
 export default function Post() {
     const { slug } = useParams();
@@ -38,13 +41,15 @@ export default function Post() {
                     />
 
                     {isAuthor && (
-                        <div className="absolute right-6 top-6">
+                        <div className="absolute right-6 top-6 flex gap-2">
                             <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3">
+                                <Button bgColor="bg-green-600 hover:bg-green-700" className="flex items-center gap-1.5 px-3 py-1.5 text-xs">
+                                    <Pencil className="h-3.5 w-3.5" />
                                     Edit
                                 </Button>
                             </Link>
-                            <Button bgColor="bg-red-500" onClick={handleDeleteClick}>
+                            <Button bgColor="bg-red-600 hover:bg-red-700" onClick={handleDeleteClick} className="flex items-center gap-1.5 px-3 py-1.5 text-xs">
+                                <Trash2 className="h-3.5 w-3.5" />
                                 Delete
                             </Button>
                         </div>
@@ -61,25 +66,34 @@ export default function Post() {
                                         navigate(`/all-posts?tag=${encodeURIComponent(tag)}`)
                                     }}
 
-                                    className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full"
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full cursor-pointer hover:bg-blue-200 transition"
                                 >
+                                    <TagIcon className="h-3 w-3" />
                                     {tag}
                                 </span>
                             ))}
                         </div>
                     )}
 
-                     {/* Reading Time Badge */}
-                    <div className="flex items-center gap-2 text-xs text-gray-500 font-medium mb-2">
-                        <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md border border-gray-200">
-                            ⏱️ {calculateReadingTime(post.content)}
+                     {/* Reading Time & Vote Badges */}
+                    <div className="flex items-center gap-3 text-xs text-gray-500 font-medium mb-3">
+                        <span className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md border border-gray-200">
+                            <Clock className="h-3.5 w-3.5 text-gray-500" />
+                            {calculateReadingTime(post.content)}
                         </span>
+
+                        <span className="text-gray-300">|</span>
+
+                        <VoteButtons postId={post.$id} />
                     </div>
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
-                <div className="browser-css">
+                <div className="browser-css mb-8">
                     {parse(DOMPurify.sanitize(post.content))}
                 </div>
+
+                {/* Comments Section */}
+                <CommentSection postId={post.$id} />
 
                 {showConfirmModal && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
