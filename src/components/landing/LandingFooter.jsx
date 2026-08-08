@@ -2,21 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../Logo';
 
-function Footer() {
+export default function LandingFooter() {
   return (
-    <footer className="bg-[#f2f3fa] rounded-2xl mx-4 mb-4 mt-16 border border-[#e1e2e9] font-['Geist',sans-serif]">
+    <footer className="bg-[#f2f3fa] rounded-2xl mx-4 mb-4 border border-[#e1e2e9] mt-16 font-['Geist',sans-serif]">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand Column */}
         <div className="md:col-span-1 flex flex-col gap-3">
           <Link to="/">
-            <Logo width="140px" />
+            <Logo width="150px" />
           </Link>
           <p className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] max-w-[200px] mt-1">
             Built for people with something to say.
           </p>
         </div>
 
-        {/* Navigation Links Column */}
+        {/* Links Column */}
         <div className="md:col-span-2 grid grid-cols-3 gap-6">
           <div className="flex flex-col gap-2">
             <h4 className="font-bold text-sm text-[#191c21] mb-1">Product</h4>
@@ -55,15 +55,13 @@ function Footer() {
           </div>
         </div>
 
-        {/* Copyright Column */}
+        {/* Copyright */}
         <div className="md:col-span-1 flex items-end md:justify-end">
           <p className="font-['JetBrains_Mono',monospace] text-[11px] text-[#5a4138]">
-            © {new Date().getFullYear()} Inkflow. Engineering technical precision for modern writers.
+            © {new Date().getFullYear()} Inkflow. Engineering technical precision.
           </p>
         </div>
       </div>
     </footer>
   );
 }
-
-export default Footer;

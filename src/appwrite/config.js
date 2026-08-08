@@ -20,53 +20,91 @@ export class Service{
         this.bucket= new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId, tags=[] }){
+    async createPost({title, slug, content, featuredImage, status, userId, authorName, tags=[] }){
         try {
+            const docData = {
+                title,
+                content,
+                featuredImage,
+                status,
+                userid: userId,
+                tags,
+            };
+            if (authorName) docData.authorName = authorName;
+
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userid: userId,
-                    tags,
-                }
-        )
+                docData
+            )
         } catch (error) {
+            if (error?.message?.includes('authorName') || error?.code === 400) {
+                try {
+                    return await this.databases.createDocument(
+                        conf.appwriteDatabaseId,
+                        conf.appwriteCollectionId,
+                        slug,
+                        { title, content, featuredImage, status, userid: userId, tags }
+                    );
+                } catch (retryError) {
+                    Sentry.withScope((scope) => {
+                        scope.setTag("location", "Appwrite :: createPost :: retry error");
+                        Sentry.captureException(retryError);
+                    });
+                    throw retryError;
+                }
+            }
             Sentry.withScope((scope) => {
-        scope.setTag("location", "Appwrite :: createPost :: error");
-        Sentry.captureException(error);
-    });
+                scope.setTag("location", "Appwrite :: createPost :: error");
+                Sentry.captureException(error);
+            });
            
             throw error
         }
     }
 
-    async updatePost(slug,{title, content, featuredImage, status, tags=[] }){
+    async updatePost(slug,{title, content, featuredImage, status, authorName, tags=[] }){
     try {
+        const docData = {
+            title,
+            content,
+            featuredImage,
+            status,
+            tags,
+        };
+        if (authorName) docData.authorName = authorName;
+
         return await this.databases.updateDocument(
             conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    tags,
-                }
+            conf.appwriteCollectionId,
+            slug,
+            docData
         )
     } catch (error) {
+        if (error?.message?.includes('authorName') || error?.code === 400) {
+            try {
+                return await this.databases.updateDocument(
+                    conf.appwriteDatabaseId,
+                    conf.appwriteCollectionId,
+                    slug,
+                    { title, content, featuredImage, status, tags }
+                );
+            } catch (retryError) {
+                Sentry.withScope((scope) => {
+                    scope.setTag("location", "Appwrite :: updatePost :: retry error");
+                    Sentry.captureException(retryError);
+                });
+                throw retryError;
+            }
+        }
         Sentry.withScope((scope) => {
-        scope.setTag("location", "Appwrite :: updatePost :: error");
-        Sentry.captureException(error);
-            });
+            scope.setTag("location", "Appwrite :: updatePost :: error");
+            Sentry.captureException(error);
+        });
             
-            throw error
-        }   
+        throw error
+    }   
     }
     async deletePost(slug){
         try {

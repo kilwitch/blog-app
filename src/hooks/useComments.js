@@ -3,6 +3,8 @@ import commentService from '../appwrite/comments'
 import { toast } from 'sonner'
 import * as Sentry from '@sentry/react'
 
+import { saveAuthorName } from '../utils/authorCache'
+
 export function useComments(postId) {
     const [comments, setComments] = useState([])
     const [loading, setLoading] = useState(true)
@@ -19,6 +21,11 @@ export function useComments(postId) {
         try {
             const res = await commentService.getComments(postId)
             if (res && res.documents) {
+                res.documents.forEach((c) => {
+                    if (c.userId && c.userName) {
+                        saveAuthorName(c.userId, c.userName);
+                    }
+                });
                 setComments(res.documents)
             } else {
                 setComments([])

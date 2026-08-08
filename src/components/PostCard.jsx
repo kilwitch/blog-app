@@ -27,16 +27,19 @@ function PostCard({ $id, title, featuredImage, tags = [] }) {
         {/* Card Footer: Tags (left) + Vote Summary Badge (bottom-right) */}
         <div className='flex items-center justify-between gap-2 mt-4 pt-2 border-t border-gray-200'>
           <div className='flex flex-wrap gap-1'>
-            {tags && tags.length > 0 && tags.map((tag, index) => (
-              <span key={index} 
-                onClick={(e)=> {
-                  e.preventDefault();
-                  navigate(`/all-posts?tag=${encodeURIComponent(tag)}`)
-                }}
-                className='text-xs font-semibold bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full hover:bg-gray-300 transition'>
-                {tag}
-              </span>
-            ))}
+            {tags && tags.length > 0 && tags.map((tag, index) => {
+              const cleanTag = typeof tag === 'string' ? tag.replace(/^#/, '') : tag;
+              return (
+                <span key={index} 
+                  onClick={(e)=> {
+                    e.preventDefault();
+                    navigate(`/all-posts?tag=${encodeURIComponent(cleanTag)}`)
+                  }}
+                  className='text-xs font-semibold bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full hover:bg-gray-300 transition'>
+                  {cleanTag}
+                </span>
+              );
+            })}
           </div>
 
           <div className='inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white border border-gray-200 text-xs font-medium text-gray-600 shadow-2xs shrink-0 ml-auto'>
