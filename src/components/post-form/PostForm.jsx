@@ -199,7 +199,7 @@ export default function PostForm({ post }) {
   }, [watch, slugTransform, setValue, post]);
 
   return (
-    <div className="max-w-5xl mx-auto bg-white border border-[#e1e2e9] rounded-2xl p-6 md:p-8 shadow-xs font-['Geist',sans-serif]">
+    <div className="max-w-5xl mx-auto bg-white border border-[#e1e2e9] rounded-2xl p-4 sm:p-6 md:p-8 shadow-xs font-['Geist',sans-serif]">
       <form
         onSubmit={handleSubmit(submit, (errors) => {
           Sentry.withScope((scope) => {
@@ -208,7 +208,7 @@ export default function PostForm({ post }) {
             Sentry.captureMessage('PostForm validation failed', 'warning');
           });
         })}
-        className="flex flex-col lg:flex-row gap-8"
+        className="flex flex-col lg:flex-row gap-6 lg:gap-8"
       >
         {/* Error Notification */}
         {submitError && (
@@ -218,7 +218,7 @@ export default function PostForm({ post }) {
         )}
 
         {/* Left Column: Title, Slug & Content Editor */}
-        <div className="w-full lg:w-2/3 flex flex-col gap-6">
+        <div className="w-full lg:w-2/3 flex flex-col gap-5 sm:gap-6 min-w-0">
           <Input
             label="Post Title"
             placeholder="Enter an intriguing title..."
@@ -240,7 +240,7 @@ export default function PostForm({ post }) {
             }}
           />
 
-          <div>
+          <div className="w-full max-w-full overflow-hidden">
             <label className="inline-block mb-1.5 font-['JetBrains_Mono',monospace] text-xs font-semibold text-[#5a4138] uppercase tracking-wider">
               Article Content
             </label>

@@ -9,10 +9,10 @@ export default function ExploreSearchFilter({
   onClearFilters 
 }) {
   return (
-    <section className="mb-12 max-w-4xl mx-auto font-['Geist',sans-serif]">
+    <section className="mb-8 sm:mb-12 max-w-4xl mx-auto px-2 sm:px-0 font-['Geist',sans-serif]">
       {/* Search Input Bar */}
-      <form onSubmit={onSearchSubmit} className="relative mb-6">
-        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#5a4138] text-[22px]">
+      <form onSubmit={onSearchSubmit} className="relative mb-4 sm:mb-6">
+        <span className="material-symbols-outlined absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-[#5a4138] text-[20px] sm:text-[22px]">
           search
         </span>
         <input
@@ -20,13 +20,13 @@ export default function ExploreSearchFilter({
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search posts by title or tag..."
-          className="w-full bg-[#f2f3fa] border border-[#e1e2e9] rounded-full py-3.5 pl-12 pr-4 font-['Geist',sans-serif] text-sm text-[#191c21] focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20 transition-all shadow-xs"
+          className="w-full bg-[#f2f3fa] border border-[#e1e2e9] rounded-full py-2.5 sm:py-3.5 pl-10 sm:pl-12 pr-4 font-['Geist',sans-serif] text-xs sm:text-sm text-[#191c21] focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20 transition-all shadow-xs"
         />
       </form>
 
       {/* Active Filter Badges */}
       {(urlQuery || tagQuery) && (
-        <div className="flex flex-wrap items-center gap-3 pt-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
           {urlQuery && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#e1e2e9] text-[#191c21] rounded-full text-xs font-['JetBrains_Mono',monospace]">
               Query: <strong>"{urlQuery}"</strong>

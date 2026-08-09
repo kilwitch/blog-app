@@ -31,10 +31,10 @@ export default function useDashboardData(userData) {
 
         if (!isMounted) return;
         setPosts(userPosts);
+        setLoading(false); // Render posts immediately without blocking UI!
 
         if (userPosts.length === 0) {
           setTopTags(['React', 'Node.js', 'Appwrite', 'WebDev']);
-          setLoading(false);
           return;
         }
 

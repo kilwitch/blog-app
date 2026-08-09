@@ -52,14 +52,14 @@ export default function Post() {
     }
 
     return post ? (
-        <div className="w-full bg-[#f8f9ff] text-[#191c21] min-h-screen py-8 font-['Geist',sans-serif]">
+        <div className="w-full bg-[#f8f9ff] text-[#191c21] min-h-screen py-6 sm:py-8 font-['Geist',sans-serif]">
             <Container>
-                <main className="max-w-[800px] mx-auto w-full px-4 pt-4 pb-16">
+                <main className="max-w-[800px] mx-auto w-full px-2 sm:px-4 pt-2 sm:pt-4 pb-16">
                     {/* Header Section */}
-                    <header className="text-center mb-10">
+                    <header className="text-center mb-8 sm:mb-10">
                         {/* Tags */}
                         {post.tags && post.tags.length > 0 && (
-                            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+                            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                                 {post.tags.map((tag, index) => {
                                     const cleanTag = typeof tag === 'string' ? tag.replace(/^#/, '') : tag;
                                     return (
@@ -69,7 +69,7 @@ export default function Post() {
                                                 e.preventDefault();
                                                 navigate(`/all-posts?tag=${encodeURIComponent(cleanTag)}`);
                                             }}
-                                            className="px-3 py-1 bg-[#f2f3fa] text-[#5a4138] border border-[#e1e2e9] rounded-full font-['JetBrains_Mono',monospace] text-xs font-semibold uppercase tracking-wider cursor-pointer hover:border-[#ea580c] hover:text-[#ea580c] transition-colors"
+                                            className="px-2.5 sm:px-3 py-1 bg-[#f2f3fa] text-[#5a4138] border border-[#e1e2e9] rounded-full font-['JetBrains_Mono',monospace] text-[11px] sm:text-xs font-semibold uppercase tracking-wider cursor-pointer hover:border-[#ea580c] hover:text-[#ea580c] transition-colors"
                                         >
                                             {cleanTag}
                                         </span>
@@ -79,12 +79,12 @@ export default function Post() {
                         )}
 
                         {/* Title */}
-                        <h1 className="text-3xl md:text-5xl font-bold text-[#191c21] mb-6 leading-tight tracking-tight">
+                        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#191c21] mb-4 sm:mb-6 leading-tight tracking-tight">
                             {post.title}
                         </h1>
 
                         {/* Author & Meta Info */}
-                        <div className="flex flex-wrap items-center justify-center gap-3 text-[#5a4138] font-['JetBrains_Mono',monospace] text-xs">
+                        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[#5a4138] font-['JetBrains_Mono',monospace] text-xs">
                             <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-[#ea580c] text-white flex items-center justify-center text-xs font-bold">
                                     {authorInitial}
@@ -132,12 +132,12 @@ export default function Post() {
                     )}
 
                     {/* Post Content */}
-                    <article className="prose prose-lg max-w-none text-[#191c21] mb-12 font-['Geist',sans-serif] leading-relaxed text-base md:text-lg">
+                    <article className="prose prose-lg max-w-full text-[#191c21] mb-12 font-['Geist',sans-serif] leading-relaxed text-base md:text-lg overflow-hidden">
                         {parse(DOMPurify.sanitize(post.content))}
                     </article>
 
                     {/* Engagement & Votes Section */}
-                    <div className="py-6 border-t border-b border-[#e1e2e9] mb-12 flex items-center justify-between">
+                    <div className="py-4 sm:py-6 border-t border-b border-[#e1e2e9] mb-12 flex items-center justify-between">
                         <VoteButtons postId={post.$id} />
                     </div>
 
@@ -147,7 +147,7 @@ export default function Post() {
                     {/* Confirm Delete Modal */}
                     {showConfirmModal && (
                         <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4 font-['Geist',sans-serif]">
-                            <div className="bg-white border border-[#e1e2e9] rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl text-center">
+                            <div className="bg-white border border-[#e1e2e9] rounded-2xl p-5 sm:p-8 max-w-md w-full shadow-2xl text-center">
                                 {/* Alert Trash Badge Header */}
                                 <div className="w-12 h-12 rounded-full bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center mx-auto mb-4 shadow-xs">
                                     <span className="material-symbols-outlined text-2xl">delete_forever</span>

@@ -25,35 +25,27 @@ export class AuthService {
     }
 
     async login({email, password}){
-    try {
-        // Delete existing session first if any
         try {
-            await this.account.deleteSession('current')
-        } catch {
-            // No active session, ignore error
+            return await this.account.createEmailSession(email, password);
+        } catch (error) {
+            Sentry.withScope((scope)=>{
+                scope.setTag('location','Appwrite:: login');
+                Sentry.captureException(error);
+            });
+            throw error;
         }
-        return await this.account.createEmailSession(email, password)
-    } catch (error) {
-        Sentry.withScope((scope)=>{
-            scope.setTag('location','Appwrite:: login');
-            Sentry.captureException(error);
-        })
-        throw error
     }
-}
 
     async getCurrentUser() {
         try {
             return await this.account.get();
         } catch (error) {
-            Sentry.withScope((scope)=>{
-            scope.setTag('location','Appwrite service :: getCurrentUser :: error');
-            Sentry.captureException(error);
-        })
-            throw error;
+            Sentry.withScope((scope) => {
+                scope.setTag('location', 'Appwrite service :: getCurrentUser :: error');
+                Sentry.captureException(error);
+            });
+            return null;
         }
-
-        return null;
     }
 
     async logout(){

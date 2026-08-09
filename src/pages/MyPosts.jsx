@@ -59,13 +59,13 @@ function MyPosts() {
         />
 
         {/* Filters & Sorting Navigation Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 border-b border-[#e1e2e9] pb-3">
-          <div className="flex flex-wrap items-center gap-6 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-[#e1e2e9] pb-3">
+          <div className="flex items-center gap-3 sm:gap-6 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
             <button
               onClick={() => setActiveTab('all')}
-              className={`font-semibold text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
+              className={`font-semibold text-xs sm:text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
                 activeTab === 'all'
-                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px]'
+                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px] sm:-mb-[13px]'
                   : 'text-[#5a4138] hover:text-[#191c21]'
               }`}
             >
@@ -73,9 +73,9 @@ function MyPosts() {
             </button>
             <button
               onClick={() => setActiveTab('published')}
-              className={`font-semibold text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
+              className={`font-semibold text-xs sm:text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
                 activeTab === 'published'
-                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px]'
+                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px] sm:-mb-[13px]'
                   : 'text-[#5a4138] hover:text-[#191c21]'
               }`}
             >
@@ -83,9 +83,9 @@ function MyPosts() {
             </button>
             <button
               onClick={() => setActiveTab('drafts')}
-              className={`font-semibold text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
+              className={`font-semibold text-xs sm:text-sm pb-2 whitespace-nowrap cursor-pointer transition-colors ${
                 activeTab === 'drafts'
-                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px]'
+                  ? 'text-[#ea580c] border-b-2 border-[#ea580c] -mb-[13px] sm:-mb-[13px]'
                   : 'text-[#5a4138] hover:text-[#191c21]'
               }`}
             >
@@ -93,7 +93,7 @@ function MyPosts() {
             </button>
           </div>
 
-          <div className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] flex items-center gap-2 border border-[#e1e2e9] rounded-lg px-3 py-1.5 bg-white shadow-xs">
+          <div className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] flex items-center gap-2 border border-[#e1e2e9] rounded-lg px-3 py-1.5 bg-white shadow-xs self-end sm:self-auto">
             <span className="material-symbols-outlined text-[16px]">sort</span>
             <span>Sort: Newest</span>
           </div>

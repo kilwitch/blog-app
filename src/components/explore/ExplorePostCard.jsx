@@ -63,22 +63,22 @@ export default function ExplorePostCard({
       </div>
 
       {/* Card Body Content */}
-      <div className="flex flex-col flex-grow p-6">
+      <div className="flex flex-col flex-grow p-4 sm:p-6">
         {/* Header Author Info & Date */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[#ea580c] text-white flex items-center justify-center font-['JetBrains_Mono',monospace] text-[10px] font-bold">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-6 h-6 rounded-full bg-[#ea580c] text-white flex items-center justify-center font-['JetBrains_Mono',monospace] text-[10px] font-bold shrink-0">
               {displayInitial}
             </div>
-            <span className="font-semibold text-xs text-[#191c21] truncate max-w-[120px]">
+            <span className="font-semibold text-xs text-[#191c21] truncate max-w-[90px] sm:max-w-[120px]">
               {displayName}
             </span>
           </div>
-          <span className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138]">{formattedDate}</span>
+          <span className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] shrink-0">{formattedDate}</span>
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-bold text-[#191c21] mb-2 line-clamp-2 leading-snug group-hover:text-[#ea580c] transition-colors">
+        <h3 className="text-base sm:text-lg font-bold text-[#191c21] mb-2 line-clamp-2 leading-snug group-hover:text-[#ea580c] transition-colors">
           {title}
         </h3>
 
@@ -89,7 +89,7 @@ export default function ExplorePostCard({
 
         {/* Upvotes, Downvotes, & Comments Bar */}
         <div className="flex items-center justify-between py-2.5 border-y border-[#e1e2e9] my-3 text-[#5a4138]">
-          <div className="flex items-center gap-4 text-xs font-['JetBrains_Mono',monospace]">
+          <div className="flex items-center gap-2.5 sm:gap-4 text-xs font-['JetBrains_Mono',monospace] flex-wrap">
             {/* Upvote Button */}
             <button
               onClick={(e) => {
@@ -130,7 +130,7 @@ export default function ExplorePostCard({
                 e.stopPropagation();
                 navigate(`/post/${$id}#comments`);
               }}
-              className="flex items-center gap-1 ml-2 hover:text-[#ea580c] transition-colors cursor-pointer"
+              className="flex items-center gap-1 ml-1 sm:ml-2 hover:text-[#ea580c] transition-colors cursor-pointer"
               title="Discuss story"
             >
               <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
@@ -140,8 +140,8 @@ export default function ExplorePostCard({
         </div>
 
         {/* Footer Tags & Read Time */}
-        <div className="flex items-center justify-between mt-auto pt-1">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center justify-between mt-auto pt-1 gap-2">
+          <div className="flex flex-wrap gap-1">
             {Array.isArray(tags) && tags.length > 0 && (
               tags.slice(0, 3).map((tag) => {
                 const cleanTag = typeof tag === 'string' ? tag.replace(/^#/, '') : tag;
@@ -157,7 +157,7 @@ export default function ExplorePostCard({
               })
             )}
           </div>
-          <span className="font-['JetBrains_Mono',monospace] text-[11px] text-[#5a4138] whitespace-nowrap">
+          <span className="font-['JetBrains_Mono',monospace] text-[11px] text-[#5a4138] whitespace-nowrap shrink-0 ml-auto">
             5 min read
           </span>
         </div>

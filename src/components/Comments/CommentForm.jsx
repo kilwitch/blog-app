@@ -45,20 +45,20 @@ export function CommentForm({ onSubmit, submitting }) {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex items-start gap-3 w-full mb-6">
-            <Avatar className="h-10 w-10 shrink-0 mt-0.5 shadow-sm">
-                <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-sm">
+        <form onSubmit={handleSubmit} className="flex items-start gap-2 sm:gap-3 w-full mb-6">
+            <Avatar className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 mt-0.5 shadow-sm">
+                <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs sm:text-sm">
                     {userInitial}
                 </AvatarFallback>
             </Avatar>
 
-            <div className="flex-1 space-y-2">
+            <div className="flex-1 space-y-2 min-w-0">
                 <Textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Write a comment..."
                     rows={2}
-                    className="w-full resize-none rounded-xl border-gray-200 dark:border-gray-700 focus:border-blue-500 text-sm"
+                    className="w-full resize-none rounded-xl border-gray-200 dark:border-gray-700 focus:border-blue-500 text-xs sm:text-sm p-2.5 sm:p-3"
                 />
 
                 <div className="flex justify-end">
@@ -75,7 +75,7 @@ export function CommentForm({ onSubmit, submitting }) {
                         ) : (
                             <>
                                 <Send className="h-3.5 w-3.5" />
-                                submit
+                                Submit
                             </>
                         )}
                     </Button>

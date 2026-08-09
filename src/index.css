@@ -120,11 +120,48 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+    overflow-x: hidden;
+  }
   html {
     @apply font-sans;
-    }
+    overflow-x: hidden;
+  }
+
+  /* Responsive Rich-Text Prose Code Blocks & Media Constraints */
+  .prose pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .prose code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .prose img,
+  .prose video,
+  .prose iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .prose {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 }

@@ -24,6 +24,9 @@ function App() {
         dispatch(logout())
       }
     })
+    .catch(() => {
+      dispatch(logout())
+    })
     .finally(() => setLoading(false))
   }, [dispatch])
   

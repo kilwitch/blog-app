@@ -21,8 +21,8 @@ function Signup() {
   };
 
   return (
-    <div className="w-full bg-[#f8f9ff] min-h-[calc(100vh-160px)] flex items-center justify-center py-12 px-4 font-['Geist',sans-serif]">
-      <div className="mx-auto w-full max-w-md bg-white border border-[#e1e2e9] rounded-2xl p-8 md:p-10 shadow-sm">
+    <div className="w-full bg-[#f8f9ff] min-h-[calc(100vh-160px)] flex items-center justify-center py-8 sm:py-12 px-3 sm:px-4 font-['Geist',sans-serif]">
+      <div className="mx-auto w-full max-w-md bg-white border border-[#e1e2e9] rounded-2xl p-5 sm:p-8 md:p-10 shadow-sm">
         {/* Brand Logo Header */}
         <div className="mb-6 flex justify-center">
           <Link to="/">

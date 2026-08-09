@@ -41,10 +41,8 @@ function AllPosts() {
       Query.limit(100),
     ];
 
-    const minDelay = new Promise((resolve) => setTimeout(resolve, 400));
-
-    Promise.all([service.getPosts(queries), minDelay])
-      .then(([postsResponse]) => {
+    service.getPosts(queries)
+      .then((postsResponse) => {
         if (postsResponse && postsResponse.documents) {
           let fetchedPosts = postsResponse.documents;
 

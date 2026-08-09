@@ -18,23 +18,23 @@ export function CommentItem({ comment, currentUserId, onDelete }) {
         : ''
 
     return (
-        <div className="flex items-start gap-3 w-full py-2">
+        <div className="flex items-start gap-2 sm:gap-3 w-full py-2">
             
-            <Avatar className="h-10 w-10 shrink-0 shadow-sm">
-                <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-sm">
+            <Avatar className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 shadow-sm mt-0.5">
+                <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs sm:text-sm">
                     {initial}
                 </AvatarFallback>
             </Avatar>
 
             
-            <div className="flex-1 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/80 rounded-2xl rounded-tl-none p-4 shadow-sm relative group">
-                <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+            <div className="flex-1 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/80 rounded-2xl rounded-tl-none p-3 sm:p-4 shadow-sm relative group min-w-0">
+                <div className="flex items-center justify-between mb-1 gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                        <span className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate max-w-[120px] sm:max-w-none">
                             {comment.userName || 'User'}
                         </span>
                         {formattedDate && (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-[11px] sm:text-xs text-gray-400">
                                 {formattedDate}
                             </span>
                         )}
@@ -45,7 +45,7 @@ export function CommentItem({ comment, currentUserId, onDelete }) {
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => onDelete(comment.$id)}
-                            className="text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="text-gray-400 hover:text-red-600 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             title="Delete comment"
                         >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -53,7 +53,7 @@ export function CommentItem({ comment, currentUserId, onDelete }) {
                     )}
                 </div>
 
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed break-words">
                     {comment.content}
                 </p>
             </div>

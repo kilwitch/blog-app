@@ -33,7 +33,7 @@ export default function PostingActivityChart({ posts = [] }) {
   }, [posts]);
 
   return (
-    <div className="bg-white border border-[#e1e2e9] rounded-lg p-6 h-80 flex flex-col gap-4 shadow-sm">
+    <div className="bg-white border border-[#e1e2e9] rounded-lg p-4 sm:p-6 h-80 flex flex-col gap-4 shadow-sm">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-[#191c21]">Posting Activity</h3>
         <span className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] bg-[#f2f3fa] px-2.5 py-1 rounded border border-[#e1e2e9]">

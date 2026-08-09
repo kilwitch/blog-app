@@ -4,12 +4,12 @@ import Logo from '../Logo';
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-[#f2f3fa] rounded-2xl mx-4 mb-4 border border-[#e1e2e9] mt-16 font-['Geist',sans-serif]">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-[#f2f3fa] rounded-2xl mx-2 sm:mx-4 mb-4 border border-[#e1e2e9] mt-12 sm:mt-16 font-['Geist',sans-serif]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
         {/* Brand Column */}
         <div className="md:col-span-1 flex flex-col gap-3">
           <Link to="/">
-            <Logo width="150px" />
+            <Logo width="140px" />
           </Link>
           <p className="font-['JetBrains_Mono',monospace] text-xs text-[#5a4138] max-w-[200px] mt-1">
             Built for people with something to say.
@@ -17,7 +17,7 @@ export default function LandingFooter() {
         </div>
 
         {/* Links Column */}
-        <div className="md:col-span-2 grid grid-cols-3 gap-6">
+        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex flex-col gap-2">
             <h4 className="font-bold text-sm text-[#191c21] mb-1">Product</h4>
             <Link to="/all-posts" className="text-xs text-[#5a4138] hover:text-[#ea580c] transition-colors">
@@ -44,7 +44,7 @@ export default function LandingFooter() {
             </Link>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 col-span-2 sm:col-span-1">
             <h4 className="font-bold text-sm text-[#191c21] mb-1">Connect</h4>
             <a href="https://github.com" target="_blank" rel="noreferrer" className="text-xs text-[#5a4138] hover:text-[#ea580c] transition-colors">
               GitHub

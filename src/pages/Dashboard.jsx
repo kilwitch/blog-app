@@ -79,9 +79,9 @@ export default function Dashboard() {
         }`}
       >
         {/* Dashboard Canvas */}
-        <main className="flex-1 p-6 max-w-7xl w-full mx-auto flex flex-col gap-6 pt-12 md:pt-6">
+        <main className="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto flex flex-col gap-4 sm:gap-6 pt-16 md:pt-6">
           {/* Top Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCard label="Total Posts" value={posts.length} icon="article" loading={loading} />
             <StatCard label="Total Comments" value={totalComments} icon="forum" loading={loading} />
             <StatCard
@@ -101,15 +101,15 @@ export default function Dashboard() {
           </div>
 
           {/* Main Grid Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-6">
             {/* Left Column (Wide) */}
-            <div className="xl:col-span-8 flex flex-col gap-6">
+            <div className="xl:col-span-8 flex flex-col gap-4 sm:gap-6 min-w-0">
               <PostingActivityChart posts={posts} />
               <RecentPostsTable posts={posts} onNavigate={navigate} />
             </div>
 
             {/* Right Column (Narrow) */}
-            <div className="xl:col-span-4 flex flex-col gap-6">
+            <div className="xl:col-span-4 flex flex-col gap-4 sm:gap-6">
               <VoteAnalyticsCard
                 netVoteScore={netVoteScore}
                 upvotesCount={upvotesCount}
@@ -121,7 +121,7 @@ export default function Dashboard() {
           </div>
 
           {/* Bottom Grid Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
             <RecentCommentsFeed comments={recentComments} />
             <ProfileSummaryCard
               userName={userData?.name || 'Developer'}

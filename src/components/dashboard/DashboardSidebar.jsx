@@ -15,10 +15,10 @@ export default function DashboardSidebar({ isCollapsed, setIsCollapsed, onLogout
   return (
     <>
       {/* Mobile Floating Hamburger Toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className="md:hidden fixed top-3 left-3 z-[60]">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2.5 bg-white text-[#191c21] border border-[#e1e2e9] rounded-xl shadow-md hover:bg-[#f2f3fa] transition-colors cursor-pointer flex items-center justify-center"
+          className="p-2 bg-white text-[#191c21] border border-[#e1e2e9] rounded-xl shadow-lg hover:bg-[#f2f3fa] transition-colors cursor-pointer flex items-center justify-center"
           title="Toggle Mobile Menu"
         >
           <span className="material-symbols-outlined text-[24px]">
@@ -31,13 +31,13 @@ export default function DashboardSidebar({ isCollapsed, setIsCollapsed, onLogout
       {!isCollapsed && (
         <div
           onClick={() => setIsCollapsed(true)}
-          className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
+          className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-[55] transition-opacity"
         />
       )}
 
       {/* Sidebar Navigation Container */}
       <nav
-        className={`fixed left-0 top-0 h-screen bg-[#f2f3fa] border-r border-[#e1e2e9] z-40 flex flex-col py-6 transition-all duration-300 ${
+        className={`fixed left-0 top-0 h-screen bg-[#f2f3fa] border-r border-[#e1e2e9] z-[58] flex flex-col py-6 transition-all duration-300 ${
           isCollapsed ? 'w-20 px-3' : 'w-64 px-4'
         } ${
           isCollapsed ? '-translate-x-full md:translate-x-0' : 'translate-x-0'

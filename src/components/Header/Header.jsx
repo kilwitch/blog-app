@@ -26,6 +26,12 @@ function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
+  // Close mobile menu on location change
+  React.useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     authService.logout()
@@ -51,17 +57,18 @@ function Header() {
   ];
 
   return (
-    <header className="sticky top-4 z-50 w-full px-4 font-['Geist',sans-serif]">
+    <header className="sticky top-3 sm:top-4 z-50 w-full px-2 sm:px-4 font-['Geist',sans-serif] pointer-events-none">
       {/* Inkflow Floating Pill Navbar */}
-      <nav className="mx-auto max-w-5xl w-full flex items-center justify-between gap-4 bg-white/85 backdrop-blur-md rounded-full px-6 py-2.5 border border-[#e1e2e9] shadow-md transition-all">
+      <nav className="mx-auto max-w-5xl w-full flex items-center justify-between gap-2 sm:gap-4 bg-white/90 backdrop-blur-md rounded-full px-3.5 sm:px-6 py-2 sm:py-2.5 border border-[#e1e2e9] shadow-md transition-all pointer-events-auto">
         {/* Left Branding Logo */}
         <div className="flex items-center shrink-0">
           <Link to="/">
-            <Logo width="140px" />
+            <Logo width="120px" className="sm:hidden" />
+            <Logo width="140px" className="hidden sm:flex" />
           </Link>
         </div>
 
-        {/* Center Navigation Links */}
+        {/* Center Navigation Links (Desktop) */}
         <ul className="hidden md:flex items-center gap-6">
           {navItems.map((item) => {
             if (!item.active) return null;
@@ -84,18 +91,18 @@ function Header() {
         </ul>
 
         {/* Right Action Area */}
-        <div className="flex items-center gap-3 shrink-0 ml-auto md:ml-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 ml-auto md:ml-0">
           {!authStatus ? (
             <>
               <button
                 onClick={() => navigate('/login')}
-                className="text-sm font-semibold text-[#191c21] hover:text-[#ea580c] transition-colors cursor-pointer px-3 py-1.5"
+                className="text-xs sm:text-sm font-semibold text-[#191c21] hover:text-[#ea580c] transition-colors cursor-pointer px-2 sm:px-3 py-1.5"
               >
                 Log in
               </button>
               <button
                 onClick={() => navigate('/signup')}
-                className="bg-[#ea580c] hover:bg-[#c2410c] text-white text-sm font-semibold px-5 py-2 rounded-full transition-all shadow-sm active:scale-95 cursor-pointer"
+                className="bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs sm:text-sm font-semibold px-3 sm:px-5 py-1.5 sm:py-2 rounded-full transition-all shadow-sm active:scale-95 cursor-pointer whitespace-nowrap"
               >
                 Get Started
               </button>
@@ -104,7 +111,7 @@ function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="focus:outline-none cursor-pointer rounded-full p-0.5 border border-[#e1e2e9] hover:border-[#ea580c] transition-colors bg-white shadow-xs">
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-7 h-7 sm:w-8 sm:h-8">
                     <AvatarImage src={userData?.prefs?.avatar || ''} alt={userData?.name || 'User'} />
                     <AvatarFallback className="bg-[#ea580c] text-white font-bold text-xs">
                       {userInitial}
@@ -162,8 +169,52 @@ function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 text-[#5a4138] hover:text-[#ea580c] rounded-lg transition-colors cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Collapsible Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mx-auto max-w-5xl mt-2 bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-[#e1e2e9] shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-auto">
+          <ul className="flex flex-col gap-2">
+            {navItems.map((item) => {
+              if (!item.active) return null;
+              const isCurrent = location.pathname === item.slug;
+              return (
+                <li key={item.name}>
+                  <button
+                    onClick={() => {
+                      navigate(item.slug);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                      isCurrent
+                        ? 'bg-[rgba(234,88,12,0.1)] text-[#ea580c] font-semibold'
+                        : 'text-[#5a4138] hover:bg-[#f2f3fa] hover:text-[#191c21]'
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </header>
   );
 }

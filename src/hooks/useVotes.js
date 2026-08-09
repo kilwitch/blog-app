@@ -3,21 +3,40 @@ import voteService from '../appwrite/votes'
 import { toast } from 'sonner'
 import * as Sentry from '@sentry/react'
 
+const voteCache = new Map();
+const CACHE_TTL = 60000; // 60 seconds
+
 export function useVotes(postId, userId = null) {
-    const [upvotes, setUpvotes] = useState(0)
-    const [downvotes, setDownvotes] = useState(0)
-    const [userVote, setUserVote] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const cacheKey = `${postId}_${userId || 'guest'}`;
+    const cached = voteCache.get(cacheKey);
+
+    const [upvotes, setUpvotes] = useState(cached ? cached.data.upvotes : 0)
+    const [downvotes, setDownvotes] = useState(cached ? cached.data.downvotes : 0)
+    const [userVote, setUserVote] = useState(cached ? cached.data.userVote : null)
+    const [loading, setLoading] = useState(!cached)
     const [voting, setVoting] = useState(false)
 
-    const fetchVotes = useCallback(async () => {
+    const fetchVotes = useCallback(async (forceRefresh = false) => {
         if (!postId) {
             setLoading(false)
             return
         }
-        setLoading(true)
+
+        const key = `${postId}_${userId || 'guest'}`;
+        const existing = voteCache.get(key);
+
+        if (!forceRefresh && existing && (Date.now() - existing.timestamp < CACHE_TTL)) {
+            setUpvotes(existing.data.upvotes)
+            setDownvotes(existing.data.downvotes)
+            setUserVote(existing.data.userVote)
+            setLoading(false)
+            return;
+        }
+
+        if (!existing) setLoading(true)
         try {
             const data = await voteService.getPostVotes(postId, userId)
+            voteCache.set(key, { data, timestamp: Date.now() })
             setUpvotes(data.upvotes)
             setDownvotes(data.downvotes)
             setUserVote(data.userVote)
@@ -69,6 +88,8 @@ export function useVotes(postId, userId = null) {
         setVoting(true)
         try {
             const updated = await voteService.castVote({ postId, userId, voteType: type })
+            const key = `${postId}_${userId || 'guest'}`;
+            voteCache.set(key, { data: updated, timestamp: Date.now() })
             setUpvotes(updated.upvotes)
             setDownvotes(updated.downvotes)
             setUserVote(updated.userVote)
